@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BusWay - Sri Lanka</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#17243a}
+header{background:#073b75;color:white;padding:22px 16px}
+header h1{margin:0;font-size:28px}
+header p{margin:7px 0 0;color:#dceaff}
+main{max-width:650px;margin:20px auto;padding:0 14px}
+.card{background:white;padding:18px;border-radius:15px;margin-bottom:16px;box-shadow:0 3px 14px #0000000d}
+h2{font-size:20px;margin-top:0}
+label{display:block;font-weight:bold;margin:12px 0 6px}
+select,input{width:100%;padding:13px;border:1px solid #ccd5e2;border-radius:9px;font-size:16px;background:white}
+button{background:#0877df;color:white;border:0;border-radius:9px;padding:13px 18px;font-size:16px;font-weight:bold;cursor:pointer}
+button:disabled{background:#9aa8b8}
+.search{width:100%;margin-top:17px}
+.bus{border:1px solid #dce4ee;border-radius:12px;padding:14px;margin-top:12px}
+.bus h3{margin:0 0 8px}
+.small{color:#627087;font-size:14px}
+.seats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:15px 0}
+.seat{background:#e4f4e9;color:#176c36;padding:13px 5px;text-align:center;border-radius:8px}
+.seat.selected{background:#0877df;color:white}
+.seat.taken{background:#d9dee6;color:#7b8490}
+.seat button{width:100%;padding:12px 3px;background:transparent;color:inherit}
+.ticket{border:2px dashed #0877df;text-align:center}
+.ticket h2{color:#0877df}
+.hidden{display:none}
+footer{text-align:center;color:#738097;padding:20px;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+<h1>🚌 BusWay</h1>
+<p>Sri Lanka Bus Booking Platform</p>
+</header>
+<main>
+<section class="card">
+<h2>බස් රථයක් සොයන්න</h2>
+<label>පිටත්වන ස්ථානය</label>
+<select id="from">
+<option value="">තෝරන්න</option>
+<option>කොළඹ</option><option>කැකිරාව</option>
+<option>අනුරාධපුරය</option><option>මහනුවර</option>
+</select>
+<label>ගමනාන්තය</label>
+<select id="to">
+<option value="">තෝරන්න</option>
+<option>කොළඹ</option><option>කැකිරාව</option>
+<option>අනුරාධපුරය</option><option>මහනුවර</option>
+</select>
+<label>ගමන් දිනය</label>
+<input type="date" id="date">
+<button class="search" onclick="searchBuses()">බස් සොයන්න</button>
+</section>
+
+<section class="card hidden" id="results">
+<h2>ලබාගත හැකි බස් රථ</h2>
+<div id="busList"></div>
+</section>
+
+<section class="card hidden" id="booking">
+<h2>ආසනය තෝරන්න</h2>
+<p id="busInfo"></p>
+<div class="seats" id="seatList"></div>
+<p class="small">කොළ පාට - හිස් ආසන | අළු පාට - වෙන්කර ඇත</p>
+<label>ඔබේ නම</label>
+<input id="passenger" placeholder="සම්පූර්ණ නම">
+<label>දුරකථන අංකය</label>
+<input id="phone" type="tel" placeholder="07XXXXXXXX">
+<button class="search" onclick="confirmBooking()">Booking තහවුරු කරන්න</button>
+</section>
+
+<section class="card ticket hidden" id="ticket">
+<h2>🎟️ Booking සාර්ථකයි!</h2>
+<p>ඔබේ Booking අංකය</p>
+<h2 id="bookingNo"></h2>
+<p id="ticketDetails"></p>
+<p><b>ගෙවීම: බස් රථයට නැගීමේදී මුදල් ගෙවන්න</b></p>
+<p class="small">මෙය පරීක්ෂණ Ticket එකකි. තවමත් සැබෑ බස් Booking එකක් නොවේ.</p>
+<button onclick="window.print()">Ticket එක Print කරන්න</button>
+</section>
+</main>
+<footer>BusWay © 2026 | Travel Made Easy</footer>
+
+<script>
+let chosenBus="";
+let chosenSeat="";
+let buses=[
+{name:"BusWay Express",time:"06:30 AM",type:"AC",price:1800},
+{name:"Sri Lanka Travels",time:"08:00 AM",type:"Semi Luxury",price:1400},
+{name:"City Bus Service",time:"10:30 AM",type:"Normal",price:900}
+];
+function searchBuses(){
+let from=document.getElementById("from").value;
+let to=document.getElementById("to").value;
+let date=document.getElementById("date").value;
+if(!from||!to||!date){alert("කරුණාකර ස්ථාන දෙක සහ දිනය තෝරන්න.");return}
+if(from===to){alert("පිටත්වන ස්ථානය සහ ගමනාන්තය වෙනස් විය යුතුයි.");return}
+document.getElementById("results").classList.remove("hidden");
+document.getElementById("booking").classList.add("hidden");
+document.getElementById("ticket").classList.add("hidden");
+document.getElementById("busList").innerHTML=buses.map((b,i)=>`
+<div class="bus">
+<h3>${b.name}</h3>
+<p>${from} → ${to}</p>
+<p>වේලාව: ${b.time} | වර්ගය: ${b.type}</p>
+<p><b>රු. ${b.price}</b></p>
+<button onclick="selectBus(${i})">ආසන තෝරන්න</button>
+</div>`).join("");
+}
+function selectBus(i){
+chosenBus=buses[i].name;
+chosenSeat="";
+document.getElementById("busInfo").innerText=chosenBus+" - ආසනයක් තෝරන්න";
+document.getElementById("booking").classList.remove("hidden");
+document.getElementById("ticket").classList.add("hidden");
+let seats="";
+for(let n=1;n<=20;n++){
+seats+=`<div class="seat" id="seat${n}">
+<button onclick="chooseSeat(${n})">${n}</button></div>`;
+}
+document.getElementById("seatList").innerHTML=seats;
+}
+function chooseSeat(n){
+chosenSeat=n;
+document.querySelectorAll(".seat").forEach(s=>s.classList.remove("selected"));
+document.getElementById("seat"+n).classList.add("selected");
+}
+function confirmBooking(){
+let name=document.getElementById("passenger").value.trim();
+let phone=document.getElementById("phone").value.trim();
+if(!chosenSeat||!name||!/^0[0-9]{9}$/.test(phone)){
+alert("ආසනය තෝරා නම සහ නිවැරදි දුරකථන අංකය ඇතුළත් කරන්න.");
+return;
+}
+let code="BW"+Date.now().toString().slice(-7);
+document.getElementById("bookingNo").innerText=code;
+document.getElementById("ticketDetails").innerText=
+name+" | "+chosenBus+" | ආසනය "+chosenSeat;
+document.getElementById("ticket").classList.remove("hidden");
+document.getElementById("ticket").scrollIntoView({behavior:"smooth"});
+}
+</script>
+</body>
+</html>
