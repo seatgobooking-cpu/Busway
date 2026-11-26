@@ -3,33 +3,34 @@
 <html lang="si">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BusWay - Sri Lanka</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BusWay Sri Lanka</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#17243a}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5fb;color:#17243a}
 header{background:#073b75;color:white;padding:22px 16px}
-header h1{margin:0;font-size:28px}
-header p{margin:7px 0 0;color:#dceaff}
+header h1{margin:0;font-size:29px}
+header p{margin:7px 0 0}
 main{max-width:650px;margin:20px auto;padding:0 14px}
 .card{background:white;padding:18px;border-radius:15px;margin-bottom:16px;box-shadow:0 3px 14px #0000000d}
-h2{font-size:20px;margin-top:0}
+h2{font-size:21px;margin-top:0}
 label{display:block;font-weight:bold;margin:12px 0 6px}
-select,input{width:100%;padding:13px;border:1px solid #ccd5e2;border-radius:9px;font-size:16px;background:white}
-button{background:#0877df;color:white;border:0;border-radius:9px;padding:13px 18px;font-size:16px;font-weight:bold;cursor:pointer}
-button:disabled{background:#9aa8b8}
-.search{width:100%;margin-top:17px}
+input,select{width:100%;padding:13px;border:1px solid #ccd5e2;border-radius:9px;font-size:16px;background:white}
+button{background:#0877df;color:white;border:0;border-radius:9px;padding:13px 16px;font-size:16px;font-weight:bold;cursor:pointer}
+button:disabled{background:#aab4c0}
+.full{width:100%;margin-top:15px}
 .bus{border:1px solid #dce4ee;border-radius:12px;padding:14px;margin-top:12px}
 .bus h3{margin:0 0 8px}
-.small{color:#627087;font-size:14px}
-.seats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:15px 0}
-.seat{background:#e4f4e9;color:#176c36;padding:13px 5px;text-align:center;border-radius:8px}
+.small{font-size:13px;color:#68778b}
+.hidden{display:none}
+.seats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:17px 0}
+.seat{padding:13px 3px;border-radius:8px;background:#dff4e6;color:#176c36;text-align:center;font-weight:bold}
+.seat.taken{background:#dce1e8;color:#7a8490}
 .seat.selected{background:#0877df;color:white}
-.seat.taken{background:#d9dee6;color:#7b8490}
-.seat button{width:100%;padding:12px 3px;background:transparent;color:inherit}
+.seat button{width:100%;padding:10px 2px;background:transparent;color:inherit}
 .ticket{border:2px dashed #0877df;text-align:center}
 .ticket h2{color:#0877df}
-.hidden{display:none}
+.danger{background:#c73535}
 footer{text-align:center;color:#738097;padding:20px;font-size:13px}
 </style>
 </head>
@@ -55,7 +56,7 @@ footer{text-align:center;color:#738097;padding:20px;font-size:13px}
 </select>
 <label>ගමන් දිනය</label>
 <input type="date" id="date">
-<button class="search" onclick="searchBuses()">බස් සොයන්න</button>
+<button class="full" onclick="searchBuses()">බස් සොයන්න</button>
 </section>
 
 <section class="card hidden" id="results">
@@ -67,12 +68,12 @@ footer{text-align:center;color:#738097;padding:20px;font-size:13px}
 <h2>ආසනය තෝරන්න</h2>
 <p id="busInfo"></p>
 <div class="seats" id="seatList"></div>
-<p class="small">කොළ පාට - හිස් ආසන | අළු පාට - වෙන්කර ඇත</p>
+<p class="small">🟢 හිස් ආසන | ⚪ වෙන් කළ ආසන | 🔵 ඔබ තෝරාගත් ආසනය</p>
 <label>ඔබේ නම</label>
 <input id="passenger" placeholder="සම්පූර්ණ නම">
 <label>දුරකථන අංකය</label>
 <input id="phone" type="tel" placeholder="07XXXXXXXX">
-<button class="search" onclick="confirmBooking()">Booking තහවුරු කරන්න</button>
+<button class="full" onclick="confirmBooking()">Booking තහවුරු කරන්න</button>
 </section>
 
 <section class="card ticket hidden" id="ticket">
@@ -81,26 +82,58 @@ footer{text-align:center;color:#738097;padding:20px;font-size:13px}
 <h2 id="bookingNo"></h2>
 <p id="ticketDetails"></p>
 <p><b>ගෙවීම: බස් රථයට නැගීමේදී මුදල් ගෙවන්න</b></p>
-<p class="small">මෙය පරීක්ෂණ Ticket එකකි. තවමත් සැබෑ බස් Booking එකක් නොවේ.</p>
-<button onclick="window.print()">Ticket එක Print කරන්න</button>
+<p class="small">මෙය Demo Ticket එකකි. සැබෑ බස් සේවාවක් සමඟ තවම සම්බන්ධ කර නැත.</p>
+</section>
+
+<section class="card">
+<h2>Booking අවලංගු කරන්න</h2>
+<label>Booking අංකය</label>
+<input id="cancelCode" placeholder="BW1234567">
+<label>දුරකථන අංකය</label>
+<input id="cancelPhone" placeholder="07XXXXXXXX">
+<button class="full danger" onclick="cancelBooking()">Booking අවලංගු කරන්න</button>
 </section>
 </main>
 <footer>BusWay © 2026 | Travel Made Easy</footer>
 
 <script>
-let chosenBus="";
-let chosenSeat="";
-let buses=[
+const buses=[
 {name:"BusWay Express",time:"06:30 AM",type:"AC",price:1800},
 {name:"Sri Lanka Travels",time:"08:00 AM",type:"Semi Luxury",price:1400},
 {name:"City Bus Service",time:"10:30 AM",type:"Normal",price:900}
 ];
+
+let chosenBus=null;
+let chosenSeat=null;
+let currentRoute="";
+
+function getData(){
+try{return JSON.parse(localStorage.getItem("buswayBookings")||"[]")}
+catch(e){return []}
+}
+function saveData(data){
+localStorage.setItem("buswayBookings",JSON.stringify(data));
+}
+function makeKey(bus,from,to,date){
+return [bus,from,to,date].join("|");
+}
 function searchBuses(){
 let from=document.getElementById("from").value;
 let to=document.getElementById("to").value;
 let date=document.getElementById("date").value;
-if(!from||!to||!date){alert("කරුණාකර ස්ථාන දෙක සහ දිනය තෝරන්න.");return}
-if(from===to){alert("පිටත්වන ස්ථානය සහ ගමනාන්තය වෙනස් විය යුතුයි.");return}
+if(!from||!to||!date){
+alert("ස්ථාන දෙක සහ දිනය තෝරන්න.");
+return;
+}
+if(from===to){
+alert("ගමන් ස්ථාන දෙක වෙනස් විය යුතුයි.");
+return;
+}
+if(date<new Date().toISOString().slice(0,10)){
+alert("අතීත දිනයක් තෝරාගත නොහැක.");
+return;
+}
+currentRoute=from+"|"+to+"|"+date;
 document.getElementById("results").classList.remove("hidden");
 document.getElementById("booking").classList.add("hidden");
 document.getElementById("ticket").classList.add("hidden");
@@ -114,36 +147,88 @@ document.getElementById("busList").innerHTML=buses.map((b,i)=>`
 </div>`).join("");
 }
 function selectBus(i){
-chosenBus=buses[i].name;
-chosenSeat="";
-document.getElementById("busInfo").innerText=chosenBus+" - ආසනයක් තෝරන්න";
+chosenBus=buses[i];
+chosenSeat=null;
+document.getElementById("busInfo").innerText=
+chosenBus.name+" | "+currentRoute.replaceAll("|"," | ");
 document.getElementById("booking").classList.remove("hidden");
 document.getElementById("ticket").classList.add("hidden");
-let seats="";
+renderSeats();
+document.getElementById("booking").scrollIntoView({behavior:"smooth"});
+}
+function renderSeats(){
+let data=getData();
+let key=makeKey(chosenBus.name,
+document.getElementById("from").value,
+document.getElementById("to").value,
+document.getElementById("date").value);
+let booked=data.filter(x=>x.key===key&&x.status==="Confirmed").map(x=>x.seat);
+document.getElementById("seatList").innerHTML="";
 for(let n=1;n<=20;n++){
-seats+=`<div class="seat" id="seat${n}">
-<button onclick="chooseSeat(${n})">${n}</button></div>`;
+let div=document.createElement("div");
+div.className="seat"+(booked.includes(n)?" taken":"")+
+(chosenSeat===n?" selected":"");
+let btn=document.createElement("button");
+btn.textContent=n;
+btn.disabled=booked.includes(n);
+btn.onclick=()=>{chosenSeat=n;renderSeats();};
+div.appendChild(btn);
+document.getElementById("seatList").appendChild(div);
 }
-document.getElementById("seatList").innerHTML=seats;
-}
-function chooseSeat(n){
-chosenSeat=n;
-document.querySelectorAll(".seat").forEach(s=>s.classList.remove("selected"));
-document.getElementById("seat"+n).classList.add("selected");
 }
 function confirmBooking(){
 let name=document.getElementById("passenger").value.trim();
 let phone=document.getElementById("phone").value.trim();
-if(!chosenSeat||!name||!/^0[0-9]{9}$/.test(phone)){
+if(!chosenBus||!chosenSeat||!name||!/^0[0-9]{9}$/.test(phone)){
 alert("ආසනය තෝරා නම සහ නිවැරදි දුරකථන අංකය ඇතුළත් කරන්න.");
 return;
 }
-let code="BW"+Date.now().toString().slice(-7);
-document.getElementById("bookingNo").innerText=code;
-document.getElementById("ticketDetails").innerText=
-name+" | "+chosenBus+" | ආසනය "+chosenSeat;
+let data=getData();
+let key=makeKey(chosenBus.name,
+document.getElementById("from").value,
+document.getElementById("to").value,
+document.getElementById("date").value);
+let already=data.some(x=>x.key===key&&x.seat===chosenSeat&&x.status==="Confirmed");
+if(already){
+alert("මෙම ආසනය වෙනත් අයෙකු වෙන් කරලා. වෙනත් ආසනයක් තෝරන්න.");
+renderSeats();
+chosenSeat=null;
+return;
+}
+let code="BW"+Date.now().toString().slice(-8);
+let booking={
+code:code,name:name,phone:phone,
+bus:chosenBus.name,seat:chosenSeat,
+from:document.getElementById("from").value,
+to:document.getElementById("to").value,
+date:document.getElementById("date").value,
+key:key,status:"Confirmed",payment:"Unpaid"
+};
+data.push(booking);
+saveData(data);
+document.getElementById("bookingNo").textContent=code;
+document.getElementById("ticketDetails").textContent=
+name+" | "+booking.bus+" | ආසනය "+chosenSeat+
+" | "+booking.from+" සිට "+booking.to;
 document.getElementById("ticket").classList.remove("hidden");
 document.getElementById("ticket").scrollIntoView({behavior:"smooth"});
+chosenSeat=null;
+renderSeats();
+}
+function cancelBooking(){
+let code=document.getElementById("cancelCode").value.trim();
+let phone=document.getElementById("cancelPhone").value.trim();
+let data=getData();
+let item=data.find(x=>x.code===code&&x.phone===phone&&x.status==="Confirmed");
+if(!item){
+alert("Booking එක සොයාගත නොහැක. අංකය සහ දුරකථනය පරීක්ෂා කරන්න.");
+return;
+}
+if(!confirm("මෙම Booking එක අවලංගු කරන්නද?"))return;
+item.status="Cancelled";
+saveData(data);
+alert("Booking එක අවලංගු කළා.");
+if(chosenBus)renderSeats();
 }
 </script>
 </body>
